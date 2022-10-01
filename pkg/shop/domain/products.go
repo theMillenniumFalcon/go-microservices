@@ -5,8 +5,8 @@ import "errors"
 type ID string
 
 var (
-	ErrEmpty ID   = errors.New("empty product ID")
-	ErrEmpty Name = errors.New("empty product name")
+	ErrEmptyID   = errors.New("empty product ID")
+	ErrEmptyName = errors.New("empty product name")
 )
 
 type Product struct {
@@ -30,6 +30,10 @@ func NewProduct(id ID, name string, description string, price price.Price) (*Pro
 
 func (p Product) Name() string {
 	return p.name
+}
+
+func (p Product) Descriptiion() string {
+	return p.descriptiion
 }
 
 func (p Product) Price() price.Price {
