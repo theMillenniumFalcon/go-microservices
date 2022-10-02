@@ -15,13 +15,13 @@ type productsResource struct {
 	repo products_domain.Repository
 }
 
-type PriceView struct {
+type priceView struct {
 	Cents    uint   `json:"cents"`
 	Currency string `json:"currency"`
 }
 
-func priceViewFromPrice(p price.Price) PriceView {
-	return PriceView{p.Cents(), p.Currency()}
+func priceViewFromPrice(p price.Price) priceView {
+	return priceView{p.Cents(), p.Currency()}
 }
 
 func (p productsResource) Get(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +31,7 @@ func (p productsResource) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.Response(w, r, ProductView{
+	render.Response(w, r, productView{
 		string(product.ID()),
 		product.Name(),
 		product.Description(),
