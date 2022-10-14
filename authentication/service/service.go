@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-playground/validator/v10/non-standard/validators"
 	"github.com/theMillenniumFalcon/microservices/authentication/models"
 	"github.com/theMillenniumFalcon/microservices/authentication/repository"
 	"github.com/theMillenniumFalcon/microservices/authentication/validators"
@@ -94,5 +93,12 @@ func (s *authService) UpdateUser(ctx context.Context, req *pb.User) (*pb.User, e
 }
 
 func (s *authService) DeleteUser(ctx context.Context, req *pb.GetUserRequest) (*pb.DeleteUserResponse, error) {
-
+	if !bson.IsObjectIdHex(req.Id) {
+		return nil, validators.ErrInvalidUserId
+	}
+	err := s.usersRepository.Delete(req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.DeleteUserResponse{Id: req.Id}, nil
 }
