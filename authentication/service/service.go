@@ -27,6 +27,9 @@ func (s *authService) SignUp(ctx context.Context, req *pb.User) (*pb.User, error
 		return nil, err
 	}
 
+	req.Name = strings.TrimSpace(req.Name)
+	req.Email = strings.TrimSpace(strings.ToLower(req.Email))
+
 	found, err := s.usersRepository.GetByEmail(req.Email)
 	if err == mgo.ErrNotFound {
 		user := new(models.User)
