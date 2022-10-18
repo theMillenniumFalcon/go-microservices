@@ -6,7 +6,7 @@ import (
 	"github.com/theMillenniumFalcon/microservices/api/resthandlers"
 )
 
-func NewAuthHandlers(authHandlers resthandlers.AuthHandlers) []*Route {
+func NewAuthRoutes(authHandlers resthandlers.AuthHandlers) []*Route {
 	return []*Route{
 		{
 			Path:    "/signup",

@@ -2,8 +2,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"net/http"
 
+	"github.com/gorilla/mux"
+	"github.com/theMillenniumFalcon/microservices/api/resthandlers"
+	"github.com/theMillenniumFalcon/microservices/api/routes"
+	"github.com/theMillenniumFalcon/microservices/pb"
 	"google.golang.org/grpc"
 )
 
@@ -24,4 +30,15 @@ func main() {
 		log.Panicln(err)
 	}
 	defer conn.Close()
+
+	authSvcClient := pb.NewAuthServiceClient(conn)
+	authHandlers := resthandlers.NewAuthHandlers(authSvcClient)
+	authRoutes := routes.NewAuthRoutes(authHandlers)
+
+	router := mux.NewRouter().StrictSlash(true)
+	routes.Install(router, authRoutes)
+
+	log.Printf("API service running on [::]:%d\n", port)
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), routes.WithCORS(router)))
 }
