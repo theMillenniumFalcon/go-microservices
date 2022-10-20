@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"log"
 	"strings"
 	"time"
 
@@ -33,6 +32,11 @@ func (s *authService) SignUp(ctx context.Context, req *pb.User) (*pb.User, error
 	if err != nil {
 		return nil, err
 	}
+	req.Password, err = security.EncryptPassword(req.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	req.Name = strings.TrimSpace(req.Name)
 	req.Email = validators.NormalizeEmail(req.Email)
 
@@ -52,30 +56,6 @@ func (s *authService) SignUp(ctx context.Context, req *pb.User) (*pb.User, error
 	}
 
 	return nil, validators.ErrEmailAlreadyExists
-}
-
-func (s *authService) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.SignInResponse, error) {
-	req.Email = validators.NormalizeEmail(req.Email)
-
-	user, err := s.usersRepository.GetByEmail(req.Email)
-	if err != nil {
-		log.Println("signin failed:", err.Error())
-		return nil, validators.ErrSignInFailed
-	}
-
-	err = security.VerifyPassword(user.Password, req.Password)
-	if err != nil {
-		log.Println("signin failed:", err.Error())
-		return nil, validators.ErrSignInFailed
-	}
-
-	token, err := security.NewToken(user.Id.Hex())
-	if err != nil {
-		log.Println("signin failed:", err.Error())
-		return nil, validators.ErrSignInFailed
-	}
-
-	return &pb.SignInResponse{User: user.ToProtoBuffer(), Token: token}, nil
 }
 
 func (s *authService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User, error) {
